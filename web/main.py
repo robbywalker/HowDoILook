@@ -27,8 +27,13 @@ import sys
 
 class Screen(db.Model):
     name = db.StringProperty()
+
     hash = db.StringProperty()
     image = db.BlobProperty()
+
+    lastGoodHash = db.StringProperty()
+    lastGoodImage = db.BlobProperty()
+
     ignoredRegions = db.StringListProperty()
 
 
@@ -63,6 +68,14 @@ class ImageHandler(BaseHandler):
 
 
 
+class ApprovedImageHandler(BaseHandler):
+  def get(self, key):
+    screen = Screen.get(key)
+    self.response.headers['Content-Type'] = 'image/png'
+    self.response.out.write(screen.lastGoodImage)
+
+
+
 class UploadHandler(BaseHandler):
   def get(self):
     self.renderTemplate('templates/upload.html')
@@ -82,27 +95,38 @@ class UploadHandler(BaseHandler):
       new_hash = m.hexdigest()
 
       query = Screen.all().filter('name = ', name)
-      screen = None
-      different = False
+      state = 'Same'
       if query.count():
         screen = query.fetch(1)[0]
         if screen.hash != new_hash:
-          # TODO(robbyw): Store something here.
-          different = True
-      else:
-        screen = Screen()
+          if screen.lastGoodHash == new_hash:
+            # A change was reverted.
+            state = 'same'
+            screen.image = screen.lastGoodImage
+            screen.hash = screen.lastGoodHash
+            screen.lastGoodImage = None
+            screen.lastGoodHash = None
 
-      screen.name = name
-      screen.hash = new_hash
-      screen.image = db.Blob(img)
-      screen.ignoredRegions = []
+          else:
+            state = 'Changed'
+            if not screen.lastGoodImage:
+              # This is a new change.
+              screen.lastGoodImage = screen.image
+              screen.lastGoodHash = screen.hash
+            screen.hash = new_hash
+            screen.image = db.Blob(img)
+
+      else:
+        state = 'New'
+        screen = Screen()
+        screen.name = name
+        screen.ignoredRegions = []
+        screen.hash = new_hash
+        screen.image = db.Blob(img)
 
       screen.put()
 
-      if different:
-        self.response.out.write("Changed: %s" % new_hash)
-      else:
-        self.response.out.write("Same: %s" % new_hash)
+      self.response.out.write("%s: %s" % (state, new_hash))
 
 
 
@@ -112,6 +136,7 @@ def main():
       [('/', MainHandler),
        ('/screen/(.*)', ScreenHandler),
        ('/image/(.*)', ImageHandler),
+       ('/approvedImage/(.*)', ApprovedImageHandler),
        ('/upload', UploadHandler)
        ],
       debug=True)

@@ -5,6 +5,15 @@
   </head>
   <body>
     <h2>{{ screen.name }}</h2>
+
+    <h3>Latest Image</h3>
     <img src="/image/{{ screen.key }}" alt="" style="border: 1px solid black"/>
+    <p>Hash: {{ screen.hash }}</p>
+
+    {% if screen.lastGoodImage %}
+      <h3>Approved Image</h3>
+      <img src="/approvedImage/{{ screen.key }}" alt="" style="border: 1px solid black"/>
+      <p>Hash: {{ screen.lastGoodHash }}</p>
+    {% endif %}
   </body>
 </html>
