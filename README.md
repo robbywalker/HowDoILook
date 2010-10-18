@@ -10,3 +10,5 @@ Credits
 Shaneal Manek
 
 Greplin
+
+http://code.google.com/p/pypng/

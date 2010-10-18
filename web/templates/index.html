@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>HowDoILook?</title>
+    <link href="/static/style.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <h1>HowDoILook?</h1>
+    <p><a href="/upload">Manual upload</a></p>
+    <hr>
+    {% for screen in screens %}
+      <p><a href="/screen/{{ screen.key }}">{{ screen.name }}</a></p>
+    {% endfor %}
+  </body>
+</html>
