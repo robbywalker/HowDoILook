@@ -1,6 +1,7 @@
-package com.greplin.robotron;
+package com.greplin.robotron.keycode;
 
-public class SimpleKeycode implements Keycode {
+
+public class SimpleKeycode extends Keycode {
 	private final int main;
 	
 	public SimpleKeycode(int m) {

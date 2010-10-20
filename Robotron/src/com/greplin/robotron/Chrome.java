@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.greplin.robotron.keycode.Keycode;
+import com.greplin.robotron.keycode.ModifiedKeycode;
+
 public class Chrome extends Browser {
 	private static final String APP_NAME = "Google Chrome.app";
 	

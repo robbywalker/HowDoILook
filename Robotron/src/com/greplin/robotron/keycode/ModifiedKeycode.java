@@ -1,6 +1,7 @@
-package com.greplin.robotron;
+package com.greplin.robotron.keycode;
 
-public class ModifiedKeycode implements Keycode {
+
+public class ModifiedKeycode extends Keycode {
 	private final int main;
 	private final int modifier;
 	
